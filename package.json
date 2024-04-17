@@ -3,7 +3,9 @@
   "description": "Text processor that replaces directives by values defined in JSON",
   "version": "1.0.0",
   "author": "Luiz Fernando F. G. Valle <luizffgv10@gmail.com>",
-  "bin": "compiled/cli.js",
+  "bin": {
+    "swapem": "compiled/cli.js"
+  },
   "bugs": {
     "url": "https://github.com/luizffgv/swapem/issues"
   },
