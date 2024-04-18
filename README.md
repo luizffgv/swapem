@@ -5,6 +5,85 @@ stream and replace them by the values they ask for.
 
 You can use swapem as a Node module or via CLI with `npx`.
 
+## Usage
+
+### From Node via transform
+
+You can import the transform and use it in a pipeline like this:
+
+```js
+import { SwapDirectiveTemplate, SwapTransform } from "swapem";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
+
+await pipeline(
+  Readable.from("Hello, #package.name#!"),
+  new SwapTransform({
+    template: SwapDirectiveTemplate.fromString("# . #"),
+    swapData: {
+      package: {
+        name: "Swapem",
+      },
+    },
+  }),
+  process.stdout,
+);
+```
+
+This will output `Hello, Swapem!`.
+
+### CLI
+
+#### Help command
+
+Use `npx swapem --help` to view the available options.
+
+#### CLI example
+
+##### Input files
+
+```css
+/* example.swapem.css */
+p {
+  color: buildvar(--colors-red);
+  font-size: buildvar(--sizes-text-medium);
+}
+```
+
+```json
+// data.json
+{
+  "colors": {
+    "red": "#ff0000"
+  },
+  "sizes": {
+    "text": {
+      "medium": "1rem"
+    }
+  }
+}
+```
+
+##### Running the command
+
+```sh
+npx swapem                        \
+  --input-file example.swapem.css \
+  --output example.css            \
+  --data-file data.json           \
+  --template "buildvar(-- - )"`
+```
+
+##### Generated file
+
+```css
+/* example.css */
+p {
+  color: #ff0000;
+  font-size: 1rem;
+}
+```
+
 ## How does this work?
 
 ### General definitions
@@ -46,44 +125,3 @@ directive will be replaced by `#ff0000` per the following JSON:
 
 If the provided swap path is invalid or ends on a non-leaf node, an error will
 be thrown.
-
-## Example usage
-
-### Inputs
-
-#### Swap directive template
-
-`buildvar(-- - )`
-
-#### Swap data
-
-```json
-{
-  "colors": {
-    "red": "#ff0000"
-  },
-  "sizes": {
-    "text": {
-      "medium": "1rem"
-    }
-  }
-}
-```
-
-#### Text
-
-```css
-p {
-  color: buildvar(--colors-red);
-  font-size: buildvar(--sizes-text-medium);
-}
-```
-
-### Output
-
-```css
-p {
-  color: #ff0000;
-  font-size: 1rem;
-}
-```
