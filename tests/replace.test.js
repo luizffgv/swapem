@@ -157,6 +157,48 @@ await describe("Replace", async () => {
     assert.equal(output.toString(), "The frame rate is 60!");
   });
 
+  await it("Doesn't match start tokens inside swap directives", async () => {
+    let output = new StringWritable();
+
+    // Check that the start token is treated as part of a segment if it occurs
+    // inside a swap path.
+    await pipeline(
+      Readable.from("<!<!color.<!red!>"),
+      new SwapTransform({
+        swapData: { "<!color": { "<!red": "#ff0000" } },
+        template: SwapDirectiveTemplate.fromString("<! . !>"),
+      }),
+      output,
+    );
+    assert.equal(output.toString(), "#ff0000");
+
+    // Check that the start token is treated as a separator if it's the same as
+    // the separator and occurs inside a swap path.
+    output = new StringWritable();
+    await pipeline(
+      Readable.from("<!color<!red!>"),
+      new SwapTransform({
+        swapData: { color: { red: "#ff0000" } },
+        template: SwapDirectiveTemplate.fromString("<! <! !>"),
+      }),
+      output,
+    );
+    assert.equal(output.toString(), "#ff0000");
+
+    // Check that the start token is treated as an end token if it's the same as
+    // the end token and occurs inside a directive.
+    output = new StringWritable();
+    await pipeline(
+      Readable.from("<!color.red<!"),
+      new SwapTransform({
+        swapData: { color: { red: "#ff0000" } },
+        template: SwapDirectiveTemplate.fromString("<! . <!"),
+      }),
+      output,
+    );
+    assert.equal(output.toString(), "#ff0000");
+  });
+
   await it("Throws correctly on non-existent key", async () => {
     await assert.rejects(
       pipeline(
