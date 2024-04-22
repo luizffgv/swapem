@@ -47,6 +47,7 @@ export default tseslint.config(
       "unicorn/no-nested-ternary": "off",
       curly: "error",
       eqeqeq: ["error", "always", { null: "ignore" }],
+      "multiline-comment-style": ["error", "separate-lines"],
       "@typescript-eslint/strict-boolean-expressions": "error",
     },
   },
