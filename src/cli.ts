@@ -1,18 +1,15 @@
 #!/usr/bin/env node
 
-import { createReadStream, createWriteStream, readFileSync } from "node:fs";
+import { createReadStream, readFileSync } from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
-import tmp from "tmp";
 import { hideBin } from "yargs/helpers";
 import yargs from "yargs/yargs";
 import { SwapData } from "./swap-data.js";
 import SwapDirectiveTemplate from "./swap-directive-template.js";
 import { SwapTransform } from "./swap-transform.js";
-import fs from "node:fs/promises";
-
-tmp.setGracefulCleanup();
+import TemporaryFileWritable from "./cli/temporary-file-writable.js";
 
 await yargs(hideBin(process.argv))
   .scriptName("swapem")
@@ -90,8 +87,6 @@ await yargs(hideBin(process.argv))
               encoding: "utf8",
             });
 
-      const temporaryOutput = argv.output == null ? undefined : tmp.fileSync();
-
       const dataString =
         argv.dataFile == null
           ? argv.dataInline
@@ -112,28 +107,23 @@ await yargs(hideBin(process.argv))
         );
       }
 
+      const output = (() => {
+        if (argv.output == null) {
+          return process.stdout;
+        } else {
+          const outputFilePath = path.resolve(process.cwd(), argv.output);
+          return new TemporaryFileWritable(outputFilePath);
+        }
+      })();
+
       await pipeline(
         input,
         new SwapTransform({
           swapData: definitions.data,
           template: SwapDirectiveTemplate.fromString(argv.template),
         }),
-        temporaryOutput == null
-          ? process.stdout
-          : createWriteStream("", { fd: temporaryOutput.fd }),
+        output,
       );
-
-      if (temporaryOutput != null) {
-        if (argv.output == null) {
-          throw new Error(
-            "There's an output file descriptor but output is undefined. This should never be thrown and is a bug.",
-          );
-        }
-
-        const outputFilePath = path.resolve(process.cwd(), argv.output);
-
-        await fs.copyFile(temporaryOutput.name, outputFilePath);
-      }
     },
   )
   .parse();
