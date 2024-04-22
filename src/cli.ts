@@ -45,7 +45,7 @@ await yargs(hideBin(process.argv))
           "Data input [mutually exclusive] [required]:",
         )
         .check((argv) => {
-          if (!(argv["data-file"] || argv["data-inline"]))
+          if (argv["data-file"] == null && argv["data-inline"] == null)
             throw new Error(
               "Either data-file or data-inline must be specified.",
             );
@@ -89,7 +89,7 @@ await yargs(hideBin(process.argv))
               encoding: "utf8",
             });
 
-      const temporaryOutput = argv.output ? tmp.fileSync() : undefined;
+      const temporaryOutput = argv.output == null ? undefined : tmp.fileSync();
 
       const dataString =
         argv.dataFile == null

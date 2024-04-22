@@ -46,6 +46,7 @@ export default tseslint.config(
       // Prettier causes this
       "unicorn/no-nested-ternary": "off",
       eqeqeq: ["error", "always", { null: "ignore" }],
+      "@typescript-eslint/strict-boolean-expressions": "error",
     },
   },
 );
