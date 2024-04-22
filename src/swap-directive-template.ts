@@ -25,7 +25,9 @@ export class SwapDirectiveTemplate {
     }
 
     if (start == null || separator == null || end == null) {
-      throw new Error(`Invalid directive template "${string_}"`);
+      throw new Error(
+        `Invalid directive template "${string_}" has too few tokens.`,
+      );
     }
 
     return new SwapDirectiveTemplate(start, separator, end);
