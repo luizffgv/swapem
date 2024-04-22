@@ -3,6 +3,8 @@ export class SwapDirectiveTemplate {
   /**
    * Creates a {@link SwapDirectiveTemplate | swap directive template} from a
    * string.
+   *
+   * Leading and trailing whitespace will be ignored.
    * @param string_ - String in the format `<start> <separator> <end>`.
    * @returns Newly constructed directive template.
    * @example
@@ -13,7 +15,7 @@ export class SwapDirectiveTemplate {
    * const b = SwapDirectiveTemplate.fromString("#! @ <#");
    */
   static fromString(string_: string): SwapDirectiveTemplate {
-    const [start, separator, end] = string_.split(/\s+/);
+    const [start, separator, end] = string_.trim().split(/\s+/);
 
     if (start == null || separator == null || end == null) {
       throw new Error(`Invalid directive template "${string_}"`);
