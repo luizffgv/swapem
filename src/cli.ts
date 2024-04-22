@@ -45,10 +45,11 @@ await yargs(hideBin(process.argv))
           "Data input [mutually exclusive] [required]:",
         )
         .check((argv) => {
-          if (argv["data-file"] == null && argv["data-inline"] == null)
+          if (argv["data-file"] == null && argv["data-inline"] == null) {
             throw new Error(
               "Either data-file or data-inline must be specified.",
             );
+          }
 
           return true;
         })
@@ -97,17 +98,19 @@ await yargs(hideBin(process.argv))
           : readFileSync(path.resolve(process.cwd(), argv.dataFile), {
               encoding: "utf8",
             });
-      if (dataString == null)
+      if (dataString == null) {
         throw new Error(
           "dataString is undefined, this should never be thrown and is a bug.",
         );
+      }
 
       const definitions = SwapData.safeParse(JSON.parse(dataString));
 
-      if (!definitions.success)
+      if (!definitions.success) {
         throw new Error(
           `Failed to parse JSON data: ${definitions.error.message}`,
         );
+      }
 
       await pipeline(
         input,
@@ -121,10 +124,11 @@ await yargs(hideBin(process.argv))
       );
 
       if (temporaryOutput != null) {
-        if (argv.output == null)
+        if (argv.output == null) {
           throw new Error(
             "There's an output file descriptor but output is undefined. This should never be thrown and is a bug.",
           );
+        }
 
         const outputFilePath = path.resolve(process.cwd(), argv.output);
 

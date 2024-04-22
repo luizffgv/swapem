@@ -152,13 +152,16 @@ function inDirectiveState(context: ProcessingContext): StateFunction {
   context.stateBuffer += last;
 
   while (!context.stateBuffer.endsWith(template.end)) {
-    if (context.stateBuffer.length > 1024)
+    if (context.stateBuffer.length > 1024) {
       throw new Error(
         "Swap directive path is too long (over 1024 characters!). The directive end token is likely missing.",
       );
+    }
 
     last = input[context.nextIndex++];
-    if (last == null) return inDirectiveState; // Lend control to wait for more chunks.
+    if (last == null) {
+      return inDirectiveState; // Lend control to wait for more chunks.
+    }
 
     context.stateBuffer += last;
   }
@@ -226,7 +229,9 @@ export class SwapTransform extends Transform {
           this.#nextState = newState;
         }
       } catch (error) {
-        if (error instanceof Error) callback(error);
+        if (error instanceof Error) {
+          callback(error);
+        }
         return;
       }
     }
