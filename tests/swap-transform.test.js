@@ -34,7 +34,7 @@ class StringWritable extends Writable {
   }
 }
 
-await describe("Replace", async () => {
+await describe("SwapTransform", async () => {
   await it("Replaces once", async () => {
     let output = new StringWritable();
     await pipeline(
