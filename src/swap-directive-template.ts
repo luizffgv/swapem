@@ -7,6 +7,7 @@ export class SwapDirectiveTemplate {
    * Leading and trailing whitespace will be ignored.
    * @param string_ - String in the format `<start> <separator> <end>`.
    * @returns Newly constructed directive template.
+   * @throws {Error} If the string is invalid.
    * @example
    * // Will match strings such as <!colors.red!>
    * const a = SwapDirectiveTemplate.fromString("<! . !>");
