@@ -16,7 +16,13 @@ export class SwapDirectiveTemplate {
    * const b = SwapDirectiveTemplate.fromString("#! @ <#");
    */
   static fromString(string_: string): SwapDirectiveTemplate {
-    const [start, separator, end] = string_.trim().split(/\s+/);
+    const [start, separator, end, ...rest] = string_.trim().split(/\s+/);
+
+    if (rest.length > 0) {
+      throw new Error(
+        `Invalid directive template "${string_}" has too many tokens.`,
+      );
+    }
 
     if (start == null || separator == null || end == null) {
       throw new Error(`Invalid directive template "${string_}"`);
